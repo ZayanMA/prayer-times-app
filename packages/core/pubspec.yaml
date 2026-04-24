@@ -1,0 +1,15 @@
+name: prayer_times_core
+description: Pure Dart domain models and prayer calculation fallback.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  adhan: ^2.0.0-nullsafety.2
+  intl: ^0.19.0
+
+dev_dependencies:
+  lints: ^5.1.1
+  test: ^1.25.14

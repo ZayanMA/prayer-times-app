@@ -1,0 +1,17 @@
+name: prayer_times_app
+
+packages:
+  - apps/*
+  - packages/*
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  analyze:
+    run: melos exec -- flutter analyze
+    description: Run Flutter analyzer across workspace packages.
+  test:
+    run: melos exec --fail-fast -- "dart test"
+    description: Run Dart tests across packages that define tests.

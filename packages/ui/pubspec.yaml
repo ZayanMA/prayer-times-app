@@ -1,0 +1,16 @@
+name: prayer_times_ui
+description: Shared design tokens, layout, and widgets.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  prayer_times_core:
+    path: ../core
+
+dev_dependencies:
+  flutter_lints: ^5.0.0

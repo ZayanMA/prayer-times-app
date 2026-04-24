@@ -1,0 +1,18 @@
+name: prayer_times_sources
+description: Mosque timetable source adapters.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  html: ^0.15.5
+  http: ^1.3.0
+  intl: ^0.19.0
+  prayer_times_core:
+    path: ../core
+
+dev_dependencies:
+  lints: ^5.1.1
+  test: ^1.25.14
