@@ -36,6 +36,9 @@ class _FindScreenState extends ConsumerState<FindScreen> {
               padding: const EdgeInsets.only(right: AppSpacing.md),
               child: SegmentedButton<_ViewMode>(
                 showSelectedIcon: false,
+                style: SegmentedButton.styleFrom(
+                  minimumSize: const Size(0, 44),
+                ),
                 segments: const [
                   ButtonSegment(
                     value: _ViewMode.list,

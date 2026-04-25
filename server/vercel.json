@@ -25,5 +25,10 @@
       "path": "/api/cron/refresh_hot",
       "schedule": "0 2 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  }
 }

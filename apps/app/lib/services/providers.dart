@@ -49,6 +49,10 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return repo;
 });
 
+final feedbackRepositoryProvider = Provider<FeedbackRepository>((ref) {
+  return FeedbackRepository(baseUrl: _catalogBaseUrl);
+});
+
 final settingsProvider =
     StateNotifierProvider<SettingsController, AppSettings>((ref) {
   return SettingsController(ref.watch(settingsRepositoryProvider));

@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:prayer_times_core/core.dart';
 import 'package:prayer_times_ui/ui.dart';
@@ -39,6 +42,11 @@ class TodayScreen extends ConsumerWidget {
         return _Frame(
           actions: [
             IconButton(
+              tooltip: 'Report wrong times',
+              onPressed: () => _reportWrongTimes(context, ref, mosque.id),
+              icon: const Icon(Icons.flag_outlined),
+            ),
+            IconButton(
               tooltip: isFavourite ? 'Remove favourite' : 'Add favourite',
               onPressed: () => ref
                   .read(favouritesRepositoryProvider)
@@ -64,6 +72,7 @@ class TodayScreen extends ConsumerWidget {
                   onEnableEstimates: () => ref
                       .read(settingsProvider.notifier)
                       .update(settings.copyWith(showEstimatedTimes: true)),
+                  onSubmitPhoto: () => _submitPhoto(context, ref, mosque.id),
                 );
               }
               return _TodayBody(
@@ -76,6 +85,119 @@ class TodayScreen extends ConsumerWidget {
         );
       },
     );
+  }
+}
+
+Future<void> _reportWrongTimes(
+    BuildContext context, WidgetRef ref, String mosqueId) async {
+  final repo = ref.read(feedbackRepositoryProvider);
+  try {
+    await repo.reportWrongTimes(
+      mosqueId: mosqueId,
+      date: DateTime.now().toIso8601String().substring(0, 10),
+    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Thanks — we\'ll review this mosque\'s times.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  } catch (_) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not send report. Check your connection.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+}
+
+Future<void> _submitPhoto(
+    BuildContext context, WidgetRef ref, String mosqueId) async {
+  final picker = ImagePicker();
+  final XFile? file = await picker.pickImage(
+    source: ImageSource.camera,
+    imageQuality: 85,
+    maxWidth: 2048,
+  );
+  if (file == null || !context.mounted) return;
+
+  final bytes = await file.readAsBytes();
+  final base64 = base64Encode(bytes);
+  final ext = file.path.toLowerCase();
+  final mediaType = ext.endsWith('.png') ? 'image/png' : 'image/jpeg';
+
+  if (!context.mounted) return;
+
+  showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const SimpleDialog(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(24),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Text('Reading timetable…'),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+
+  try {
+    final repo = ref.read(feedbackRepositoryProvider);
+    final result = await repo.submitPhoto(
+      mosqueId: mosqueId,
+      imageBase64: base64,
+      mediaType: mediaType,
+    );
+
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      if (result.success && result.status != 'noted') {
+        ref.invalidate(todayTimetableProvider(mosqueId));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Done — ${result.days ?? 0} day(s) imported. Thanks!'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else if (result.status == 'noted') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('A published timetable already exists.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.message ?? 'Could not read the timetable.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  } catch (_) {
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not upload photo. Check your connection.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 }
 
@@ -263,10 +385,12 @@ class _UnavailableState extends StatelessWidget {
   const _UnavailableState({
     required this.mosque,
     required this.onEnableEstimates,
+    required this.onSubmitPhoto,
   });
 
   final Mosque mosque;
   final VoidCallback onEnableEstimates;
+  final VoidCallback onSubmitPhoto;
 
   @override
   Widget build(BuildContext context) {
@@ -290,8 +414,7 @@ class _UnavailableState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            Text('Prayer times unavailable',
-                style: theme.textTheme.titleLarge),
+            Text('Prayer times unavailable', style: theme.textTheme.titleLarge),
             const SizedBox(height: AppSpacing.sm),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -304,14 +427,25 @@ class _UnavailableState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            FilledButton.tonalIcon(
-              icon: const Icon(Icons.functions),
-              label: const Text('Show estimated times instead'),
-              onPressed: onEnableEstimates,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FilledButton.icon(
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  label: const Text('Submit a photo'),
+                  onPressed: onSubmitPhoto,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                FilledButton.tonalIcon(
+                  icon: const Icon(Icons.functions),
+                  label: const Text('Show estimated times'),
+                  onPressed: onEnableEstimates,
+                ),
+              ],
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Estimates are calculated from the mosque\'s coordinates.',
+              'Photo a printed timetable on the wall to share times with everyone.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
