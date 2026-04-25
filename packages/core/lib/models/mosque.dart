@@ -1,3 +1,4 @@
+import '../geo/lat_lng.dart';
 import 'source_kind.dart';
 
 class Mosque {
@@ -11,6 +12,10 @@ class Mosque {
     required this.sourceKind,
     required this.updatedAt,
     this.isActive = true,
+    this.latitude,
+    this.longitude,
+    this.postcode,
+    this.addressLine,
   });
 
   final String id;
@@ -22,4 +27,13 @@ class Mosque {
   final SourceKind sourceKind;
   final DateTime updatedAt;
   final bool isActive;
+  final double? latitude;
+  final double? longitude;
+  final String? postcode;
+  final String? addressLine;
+
+  bool get hasLocation => latitude != null && longitude != null;
+
+  LatLng? get location =>
+      hasLocation ? LatLng(latitude!, longitude!) : null;
 }

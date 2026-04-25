@@ -63,7 +63,12 @@ class AppAdaptiveScaffold extends StatelessWidget {
                 ),
             ],
           ),
-          const VerticalDivider(width: 1, color: AppColors.line),
+          VerticalDivider(
+            width: 1,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.lineDark
+                : AppColors.lineLight,
+          ),
           Expanded(child: body),
         ],
       ),

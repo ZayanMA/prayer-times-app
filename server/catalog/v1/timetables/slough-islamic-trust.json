@@ -1,0 +1,28 @@
+{
+  "mosqueId": "slough-islamic-trust",
+  "sourceKind": "webTable",
+  "fetchedAt": "2026-04-24T00:00:00Z",
+  "expiresAt": "2026-04-25T00:00:00Z",
+  "validFrom": "2026-04-24",
+  "validTo": "2026-04-25",
+  "days": [
+    {
+      "date": "2026-04-24",
+      "fajr": "04:12",
+      "sunrise": "05:44",
+      "dhuhr": "13:06",
+      "asr": "18:00",
+      "maghrib": "20:20",
+      "isha": "21:35"
+    },
+    {
+      "date": "2026-04-25",
+      "fajr": "04:10",
+      "sunrise": "05:42",
+      "dhuhr": "13:06",
+      "asr": "18:01",
+      "maghrib": "20:22",
+      "isha": "21:37"
+    }
+  ]
+}

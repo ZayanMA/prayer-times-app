@@ -13,5 +13,14 @@ scripts:
     run: melos exec -- "if rg -q 'sdk: flutter' pubspec.yaml; then flutter analyze; else dart analyze; fi"
     description: Run Flutter analyzer across workspace packages.
   test:
-    run: melos exec --fail-fast -- "if [ -d test ]; then dart test; fi"
-    description: Run Dart tests across packages that define tests.
+    run: |
+      melos exec --fail-fast -- '
+        if [ -d test ]; then
+          if rg -q "sdk: flutter" pubspec.yaml; then
+            flutter test
+          else
+            dart test
+          fi
+        fi
+      '
+    description: Run tests across packages, using flutter test for Flutter-bound packages.

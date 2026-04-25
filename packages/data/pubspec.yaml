@@ -8,10 +8,13 @@ environment:
 
 dependencies:
   drift: ^2.24.0
+  flutter:
+    sdk: flutter
   http: ^1.3.0
   path: ^1.9.1
   prayer_times_core:
     path: ../core
+  shared_preferences: ^2.5.2
   sqlite3: ^2.7.2
 
 dev_dependencies:

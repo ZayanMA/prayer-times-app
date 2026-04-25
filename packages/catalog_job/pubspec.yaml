@@ -7,6 +7,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
+  http: ^1.3.0
   prayer_times_core:
     path: ../core
   prayer_times_sources:

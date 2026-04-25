@@ -41,7 +41,7 @@ class PrayerRow extends StatelessWidget {
             Text(
               format.format(entry.jamaat!),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.muted,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),

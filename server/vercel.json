@@ -1,0 +1,29 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/catalog/v1/mosques.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/v1/timetables/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=21600, stale-while-revalidate=86400"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/refresh_hot",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}

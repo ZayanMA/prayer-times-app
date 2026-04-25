@@ -10,12 +10,23 @@ class TimetableRepository {
     RemoteCatalogClient? remoteCatalogClient,
     CalculationFallback? fallback,
   })  : _remoteCatalogClient = remoteCatalogClient,
-        _fallback = fallback ??
-            const CalculationFallback(latitude: 51.509865, longitude: -0.118092);
+        _defaultFallback = fallback ??
+            const CalculationFallback(latitude: 54.5, longitude: -3.0);
 
   final AppDatabase _database;
   final RemoteCatalogClient? _remoteCatalogClient;
-  final CalculationFallback _fallback;
+  final CalculationFallback _defaultFallback;
+
+  Future<CalculationFallback> _fallbackFor(String mosqueId) async {
+    final row = await _mosqueRow(mosqueId);
+    if (row?.latitude != null && row?.longitude != null) {
+      return CalculationFallback(
+        latitude: row!.latitude!,
+        longitude: row.longitude!,
+      );
+    }
+    return _defaultFallback;
+  }
 
   Stream<DailyTimetable?> watchDay(String mosqueId, DateTime date) {
     final day = _normaliseDay(date);
@@ -28,34 +39,64 @@ class TimetableRepository {
         );
   }
 
-  Future<DailyTimetable> getOrRefreshDay(String mosqueId, DateTime date) async {
-    final cached = await _cachedDay(mosqueId, date);
-    final cacheExpired = await _isCacheExpired(mosqueId);
-    if (cached != null && !cacheExpired) {
-      return cached.copyWith(isStale: false);
-    }
+  /// Returns today's published timetable for the mosque, refreshing from the
+  /// remote catalog when stale.
+  ///
+  /// Returns `null` when the mosque does not publish a timetable we can
+  /// retrieve. When [allowEstimation] is true, falls back to astronomical
+  /// calculation using the mosque's coordinates instead of returning null.
+  Future<DailyTimetable?> getOrRefreshDay(
+    String mosqueId,
+    DateTime date, {
+    bool allowEstimation = false,
+  }) async {
+    final mosqueRow = await _mosqueRow(mosqueId);
+    final sourceKind = mosqueRow == null
+        ? null
+        : SourceKind.values.byName(mosqueRow.sourceKind);
+    final hasPublishedSource =
+        sourceKind != null && sourceKind != SourceKind.calculated;
 
-    final client = _remoteCatalogClient;
-    if (client != null) {
-      try {
-        final feed = await client.fetchTimetable(mosqueId);
-        await saveRemoteTimetable(feed);
-        final refreshed = await _cachedDay(mosqueId, date);
-        if (refreshed != null) {
-          return refreshed.copyWith(isStale: await _isCacheExpired(mosqueId));
-        }
-      } catch (_) {
-        if (cached != null) {
-          return cached.copyWith(isStale: true);
-        }
+    if (hasPublishedSource) {
+      final cached = await _cachedDay(mosqueId, date);
+      final cacheExpired = await _isCacheExpired(mosqueId);
+      if (cached != null && !cacheExpired && !cached.isCalculated) {
+        return cached.copyWith(isStale: false);
       }
-    } else if (cached != null) {
-      return cached.copyWith(isStale: true);
+
+      final client = _remoteCatalogClient;
+      if (client != null) {
+        try {
+          final feed = await client.fetchTimetable(mosqueId);
+          await saveRemoteTimetable(feed);
+          final refreshed = await _cachedDay(mosqueId, date);
+          if (refreshed != null) {
+            return refreshed.copyWith(
+              isStale: await _isCacheExpired(mosqueId),
+            );
+          }
+        } catch (_) {
+          if (cached != null && !cached.isCalculated) {
+            return cached.copyWith(isStale: true);
+          }
+        }
+      } else if (cached != null && !cached.isCalculated) {
+        return cached.copyWith(isStale: true);
+      }
     }
 
-    final fallbackDay = _fallback.calculateDay(date: date, mosqueId: mosqueId);
+    if (!allowEstimation) return null;
+
+    final fallback = await _fallbackFor(mosqueId);
+    final fallbackDay = fallback.calculateDay(date: date, mosqueId: mosqueId);
     await saveDay(fallbackDay);
     return fallbackDay;
+  }
+
+  Future<MosqueRow?> _mosqueRow(String mosqueId) {
+    final query = _database.select(_database.mosques)
+      ..where((table) => table.id.equals(mosqueId));
+    return query.getSingleOrNull();
   }
 
   Future<void> saveRemoteTimetable(RemoteTimetableFeed feed) {

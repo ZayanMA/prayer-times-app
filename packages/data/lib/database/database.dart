@@ -15,6 +15,10 @@ class Mosques extends Table {
   TextColumn get city => text()();
   TextColumn get websiteUrl => text()();
   TextColumn get sourceKind => text()();
+  RealColumn get latitude => real().nullable()();
+  RealColumn get longitude => real().nullable()();
+  TextColumn get postcode => text().nullable()();
+  TextColumn get addressLine => text().nullable()();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
 
@@ -74,7 +78,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -82,6 +86,12 @@ class AppDatabase extends _$AppDatabase {
           if (from < 2) {
             await migrator.addColumn(mosques, mosques.updatedAt);
             await migrator.addColumn(mosques, mosques.isActive);
+          }
+          if (from < 3) {
+            await migrator.addColumn(mosques, mosques.latitude);
+            await migrator.addColumn(mosques, mosques.longitude);
+            await migrator.addColumn(mosques, mosques.postcode);
+            await migrator.addColumn(mosques, mosques.addressLine);
           }
         },
         beforeOpen: (details) async {
@@ -101,6 +111,10 @@ Mosque mosqueFromRow(MosqueRow row) {
     sourceKind: SourceKind.values.byName(row.sourceKind),
     updatedAt: row.updatedAt,
     isActive: row.isActive,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    postcode: row.postcode,
+    addressLine: row.addressLine,
   );
 }
 

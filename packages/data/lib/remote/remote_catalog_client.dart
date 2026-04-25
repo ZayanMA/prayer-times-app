@@ -47,17 +47,37 @@ class RemoteCatalogClient {
   }
 
   Mosque _parseMosque(Map<String, dynamic> json) {
+    final websiteRaw = json['websiteUrl'] as String?;
     return Mosque(
       id: _requiredString(json, 'id'),
       name: _requiredString(json, 'name'),
       slug: _requiredString(json, 'slug'),
       area: _requiredString(json, 'area'),
       city: _requiredString(json, 'city'),
-      websiteUrl: Uri.parse(_requiredString(json, 'websiteUrl')),
+      websiteUrl: Uri.parse(
+        websiteRaw == null || websiteRaw.isEmpty ? 'about:blank' : websiteRaw,
+      ),
       sourceKind: _parseSourceKind(_requiredString(json, 'sourceKind')),
       updatedAt: _parseDateTime(_requiredString(json, 'updatedAt')),
       isActive: json['isActive'] as bool? ?? true,
+      latitude: _toNullableDouble(json['latitude']),
+      longitude: _toNullableDouble(json['longitude']),
+      postcode: _toNullableString(json['postcode']),
+      addressLine: _toNullableString(json['addressLine']),
     );
+  }
+
+  double? _toNullableDouble(Object? value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String && value.isNotEmpty) return double.tryParse(value);
+    return null;
+  }
+
+  String? _toNullableString(Object? value) {
+    if (value == null) return null;
+    if (value is String) return value.isEmpty ? null : value;
+    return value.toString();
   }
 
   RemoteTimetableFeed _parseTimetableFeed(Map<String, dynamic> json) {
