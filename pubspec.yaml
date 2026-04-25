@@ -6,10 +6,12 @@ environment:
 
 workspace:
   - apps/app
+  - packages/catalog_job
   - packages/core
   - packages/data
   - packages/sources
   - packages/ui
 
 dev_dependencies:
+  flutter_lints: ^5.0.0
   melos: ^6.3.2

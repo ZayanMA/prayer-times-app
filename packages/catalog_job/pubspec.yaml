@@ -1,0 +1,16 @@
+name: prayer_times_catalog_job
+description: Generates the static central catalog feed consumed by the app.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  prayer_times_core:
+    path: ../core
+  prayer_times_sources:
+    path: ../sources
+
+dev_dependencies:
+  lints: ^5.1.1

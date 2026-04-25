@@ -29,13 +29,14 @@ class CalculationFallback {
       date: DateTime(date.year, date.month, date.day),
       mosqueId: mosqueId,
       isCalculated: true,
+      isStale: false,
       prayerTimes: PrayerTimes(
-        fajr: prayerTimes.fajr!,
-        sunrise: prayerTimes.sunrise!,
-        dhuhr: prayerTimes.dhuhr!,
-        asr: prayerTimes.asr!,
-        maghrib: prayerTimes.maghrib!,
-        isha: prayerTimes.isha!,
+        fajr: prayerTimes.fajr,
+        sunrise: prayerTimes.sunrise,
+        dhuhr: prayerTimes.dhuhr,
+        asr: prayerTimes.asr,
+        maghrib: prayerTimes.maghrib,
+        isha: prayerTimes.isha,
       ),
     );
   }

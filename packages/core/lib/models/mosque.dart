@@ -9,6 +9,8 @@ class Mosque {
     required this.city,
     required this.websiteUrl,
     required this.sourceKind,
+    required this.updatedAt,
+    this.isActive = true,
   });
 
   final String id;
@@ -18,4 +20,6 @@ class Mosque {
   final String city;
   final Uri websiteUrl;
   final SourceKind sourceKind;
+  final DateTime updatedAt;
+  final bool isActive;
 }

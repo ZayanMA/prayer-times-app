@@ -8,11 +8,10 @@ environment:
 
 dependencies:
   drift: ^2.24.0
+  http: ^1.3.0
   path: ^1.9.1
   prayer_times_core:
     path: ../core
-  prayer_times_sources:
-    path: ../sources
   sqlite3: ^2.7.2
 
 dev_dependencies:

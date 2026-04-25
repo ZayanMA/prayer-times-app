@@ -28,10 +28,28 @@ class DailyTimetable {
     required this.mosqueId,
     required this.prayerTimes,
     this.isCalculated = false,
+    this.isStale = false,
   });
 
   final DateTime date;
   final String mosqueId;
   final PrayerTimes prayerTimes;
   final bool isCalculated;
+  final bool isStale;
+
+  DailyTimetable copyWith({
+    DateTime? date,
+    String? mosqueId,
+    PrayerTimes? prayerTimes,
+    bool? isCalculated,
+    bool? isStale,
+  }) {
+    return DailyTimetable(
+      date: date ?? this.date,
+      mosqueId: mosqueId ?? this.mosqueId,
+      prayerTimes: prayerTimes ?? this.prayerTimes,
+      isCalculated: isCalculated ?? this.isCalculated,
+      isStale: isStale ?? this.isStale,
+    );
+  }
 }
