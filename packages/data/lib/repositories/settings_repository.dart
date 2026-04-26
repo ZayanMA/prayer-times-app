@@ -26,6 +26,8 @@ class SettingsRepository {
   static const _kNotifMinutes = 'settings.notif.minutesBefore';
   static const _kNotifAdhan = 'settings.notif.adhanSound';
   static const _kShowEstimated = 'settings.showEstimatedTimes';
+  static const _kDesignDirection = 'settings.designDirection';
+  static const _kOnboardingComplete = 'settings.onboardingComplete';
 
   AppSettings read() {
     final manualLat = _preferences.getDouble(_kManualLocLat);
@@ -72,6 +74,13 @@ class SettingsRepository {
         adhanSound: _preferences.getBool(_kNotifAdhan) ?? false,
       ),
       showEstimatedTimes: _preferences.getBool(_kShowEstimated) ?? false,
+      designDirection: _enumFromName(
+        AppDesignDirection.values,
+        _preferences.getString(_kDesignDirection),
+        AppDesignDirection.celestial,
+      ),
+      onboardingComplete:
+          _preferences.getBool(_kOnboardingComplete) ?? false,
     );
   }
 
@@ -107,6 +116,10 @@ class SettingsRepository {
     await _preferences.setInt(_kNotifMinutes, n.minutesBefore);
     await _preferences.setBool(_kNotifAdhan, n.adhanSound);
     await _preferences.setBool(_kShowEstimated, settings.showEstimatedTimes);
+    await _preferences.setString(
+        _kDesignDirection, settings.designDirection.name);
+    await _preferences.setBool(
+        _kOnboardingComplete, settings.onboardingComplete);
 
     _controller.add(settings);
   }

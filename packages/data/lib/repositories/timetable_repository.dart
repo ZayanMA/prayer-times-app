@@ -121,6 +121,8 @@ class TimetableRepository {
             SourceCachesCompanion.insert(
               mosqueId: timetable.mosqueId,
               sourceKind: sourceKind.name,
+              confidence: Value(timetable.confidence),
+              lane: Value(timetable.lane),
               fetchedAt: fetchedAt,
               expiresAt: expiresAt,
             ),
@@ -168,5 +170,6 @@ class TimetableRepository {
     return cache == null || cache.expiresAt.isBefore(DateTime.now());
   }
 
-  DateTime _normaliseDay(DateTime date) => DateTime(date.year, date.month, date.day);
+  DateTime _normaliseDay(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 }

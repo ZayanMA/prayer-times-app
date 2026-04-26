@@ -21,8 +21,10 @@ Future<void> main(List<String> args) async {
   outputDirectory.createSync(recursive: true);
   timetableDirectory.createSync(recursive: true);
 
-  final config = jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
-  final mosqueConfigs = (config['mosques'] as List<dynamic>).cast<Map<String, dynamic>>();
+  final config =
+      jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
+  final mosqueConfigs =
+      (config['mosques'] as List<dynamic>).cast<Map<String, dynamic>>();
   final now = DateTime.now().toUtc();
 
   final catalog = {
@@ -36,9 +38,22 @@ Future<void> main(List<String> args) async {
           'area': mosque['area'],
           'city': mosque['city'],
           'websiteUrl': mosque['websiteUrl'],
+          if (mosque['sourceUrl'] != null) 'sourceUrl': mosque['sourceUrl'],
           'sourceKind': mosque['sourceKind'],
+          if (mosque['sourceStatus'] != null)
+            'sourceStatus': mosque['sourceStatus'],
+          if (mosque['verifiedAt'] != null) 'verifiedAt': mosque['verifiedAt'],
           'updatedAt': mosque['updatedAt'],
           'isActive': mosque['isActive'] ?? true,
+          if (mosque['latitude'] != null) 'latitude': mosque['latitude'],
+          if (mosque['longitude'] != null) 'longitude': mosque['longitude'],
+          if (mosque['postcode'] != null) 'postcode': mosque['postcode'],
+          if (mosque['addressLine'] != null)
+            'addressLine': mosque['addressLine'],
+          if (mosque['facilities'] != null) 'facilities': mosque['facilities'],
+          if (mosque['contact'] != null) 'contact': mosque['contact'],
+          if (mosque['lastScrapeError'] != null)
+            'lastScrapeError': mosque['lastScrapeError'],
         },
     ],
   };
@@ -54,7 +69,8 @@ Future<void> main(List<String> args) async {
 
     final source = _sourceFor(mosque);
     if (source == null) {
-      stderr.writeln('No implemented source for ${mosque['id']}; skipping timetable.');
+      stderr.writeln(
+          'No implemented source for ${mosque['id']}; skipping timetable.');
       continue;
     }
 
@@ -76,11 +92,13 @@ Future<void> main(List<String> args) async {
           for (final day in timetable.days) _dayToJson(day),
         ],
       };
-      File('${timetableDirectory.path}/${source.mosqueId}.json').writeAsStringSync(
+      File('${timetableDirectory.path}/${source.mosqueId}.json')
+          .writeAsStringSync(
         const JsonEncoder.withIndent('  ').convert(feed),
       );
     } catch (error) {
-      stderr.writeln('Failed to generate timetable for ${mosque['id']}: $error');
+      stderr
+          .writeln('Failed to generate timetable for ${mosque['id']}: $error');
     }
   }
 }
@@ -119,16 +137,15 @@ Map<String, Object?> _dayToJson(DailyTimetable day) {
     if (times.fajrJamaat != null) 'fajrJamaat': _time(times.fajrJamaat!),
     if (times.dhuhrJamaat != null) 'dhuhrJamaat': _time(times.dhuhrJamaat!),
     if (times.asrJamaat != null) 'asrJamaat': _time(times.asrJamaat!),
-    if (times.maghribJamaat != null) 'maghribJamaat': _time(times.maghribJamaat!),
+    if (times.maghribJamaat != null)
+      'maghribJamaat': _time(times.maghribJamaat!),
     if (times.ishaJamaat != null) 'ishaJamaat': _time(times.ishaJamaat!),
   };
 }
 
-String _date(DateTime value) =>
-    '${value.year.toString().padLeft(4, '0')}-'
+String _date(DateTime value) => '${value.year.toString().padLeft(4, '0')}-'
     '${value.month.toString().padLeft(2, '0')}-'
     '${value.day.toString().padLeft(2, '0')}';
 
-String _time(DateTime value) =>
-    '${value.hour.toString().padLeft(2, '0')}:'
+String _time(DateTime value) => '${value.hour.toString().padLeft(2, '0')}:'
     '${value.minute.toString().padLeft(2, '0')}';

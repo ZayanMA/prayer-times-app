@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:prayer_times_core/core.dart';
 
 import '../theme/tokens.dart';
+import 'sun_arc.dart';
 
 class NextPrayerHero extends StatefulWidget {
   const NextPrayerHero({
@@ -50,95 +51,122 @@ class _NextPrayerHeroState extends State<NextPrayerHero> {
     final gradient = AppGradients.heroForTime(_now, dark: isDark);
     final timeFormat = widget.use24h ? DateFormat.Hm() : DateFormat('h:mm a');
 
+    final allEntries = widget.day.prayerTimes.entries;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadii.xl),
       child: Container(
         decoration: BoxDecoration(gradient: gradient),
-        padding: const EdgeInsets.all(AppSpacing.lg),
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.mosqueName,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.4,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.sm,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            if (next != null) ...[
-              const Text(
-                'Next prayer',
-                style: TextStyle(color: Colors.white60, fontSize: 12),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                next.name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -1,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                _countdown(next.begins.difference(_now)),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w500,
-                  fontFeatures: [FontFeature.tabularFigures()],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'at ${timeFormat.format(next.begins)}',
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-            ] else ...[
-              const Text(
-                "Today's prayers complete",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-            if (current != null) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(AppRadii.md),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.circle,
-                        color: Colors.white, size: 8),
-                    const SizedBox(width: AppSpacing.sm),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.mosqueName,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.4,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  if (next != null) ...[
+                    const Text(
+                      'Next prayer',
+                      style: TextStyle(color: Colors.white60, fontSize: 12),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
-                      'Currently ${current.name}',
+                      next.name,
                       style: const TextStyle(
                         color: Colors.white,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -1,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      _countdown(next.begins.difference(_now)),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w500,
+                        fontFeatures: [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      'at ${timeFormat.format(next.begins)}',
+                      style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                  ] else ...[
+                    const Text(
+                      "Today's prayers complete",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
-                ),
+                  if (current != null) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(AppRadii.md),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.circle, color: Colors.white, size: 8),
+                          const SizedBox(width: AppSpacing.sm),
+                          Text(
+                            'Currently ${current.name}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.md,
+                AppSpacing.md,
+              ),
+              child: SunArc(
+                prayers: allEntries,
+                now: _now,
+                use24h: widget.use24h,
+                height: 108,
+              ),
+            ),
           ],
         ),
       ),

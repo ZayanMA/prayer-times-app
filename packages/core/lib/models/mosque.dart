@@ -12,10 +12,19 @@ class Mosque {
     required this.sourceKind,
     required this.updatedAt,
     this.isActive = true,
+    this.sourceUrl,
+    this.sourceStatus,
+    this.verifiedAt,
     this.latitude,
     this.longitude,
     this.postcode,
     this.addressLine,
+    this.womensFacilities,
+    this.wheelchairAccess,
+    this.parking,
+    this.contactEmail,
+    this.contactPhone,
+    this.lastScrapeError,
   });
 
   final String id;
@@ -27,13 +36,21 @@ class Mosque {
   final SourceKind sourceKind;
   final DateTime updatedAt;
   final bool isActive;
+  final Uri? sourceUrl;
+  final String? sourceStatus;
+  final DateTime? verifiedAt;
   final double? latitude;
   final double? longitude;
   final String? postcode;
   final String? addressLine;
+  final bool? womensFacilities;
+  final bool? wheelchairAccess;
+  final bool? parking;
+  final String? contactEmail;
+  final String? contactPhone;
+  final String? lastScrapeError;
 
   bool get hasLocation => latitude != null && longitude != null;
 
-  LatLng? get location =>
-      hasLocation ? LatLng(latitude!, longitude!) : null;
+  LatLng? get location => hasLocation ? LatLng(latitude!, longitude!) : null;
 }

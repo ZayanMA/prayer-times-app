@@ -27,8 +27,15 @@ class RemoteCatalogClient {
   }
 
   Future<RemoteTimetableFeed> fetchTimetable(String mosqueId) async {
-    final json = await _getJson(_baseUri.resolve('timetables/$mosqueId.json'));
-    return _parseTimetableFeed(_asMap(json, 'timetable feed'));
+    try {
+      final json =
+          await _getJson(_baseUri.resolve('timetables/$mosqueId.json'));
+      return _parseTimetableFeed(_asMap(json, 'timetable feed'));
+    } on RemoteCatalogException {
+      final json =
+          await _getJson(_baseUri.resolve('/api/timetables/$mosqueId'));
+      return _parseTimetableFeed(_asMap(json, 'timetable feed'));
+    }
   }
 
   Future<dynamic> _getJson(Uri uri) async {
@@ -42,12 +49,16 @@ class RemoteCatalogClient {
     try {
       return jsonDecode(response.body);
     } catch (error) {
-      throw RemoteCatalogException('Remote catalog returned invalid JSON.', error);
+      throw RemoteCatalogException(
+          'Remote catalog returned invalid JSON.', error);
     }
   }
 
   Mosque _parseMosque(Map<String, dynamic> json) {
     final websiteRaw = json['websiteUrl'] as String?;
+    final sourceRaw = json['sourceUrl'] as String?;
+    final facilities = _optionalMap(json['facilities']);
+    final contact = _optionalMap(json['contact']);
     return Mosque(
       id: _requiredString(json, 'id'),
       name: _requiredString(json, 'name'),
@@ -60,10 +71,29 @@ class RemoteCatalogClient {
       sourceKind: _parseSourceKind(_requiredString(json, 'sourceKind')),
       updatedAt: _parseDateTime(_requiredString(json, 'updatedAt')),
       isActive: json['isActive'] as bool? ?? true,
+      sourceUrl:
+          sourceRaw == null || sourceRaw.isEmpty ? null : Uri.parse(sourceRaw),
+      sourceStatus: _toNullableString(json['sourceStatus']),
+      verifiedAt: _toNullableDateTime(json['verifiedAt']),
       latitude: _toNullableDouble(json['latitude']),
       longitude: _toNullableDouble(json['longitude']),
       postcode: _toNullableString(json['postcode']),
       addressLine: _toNullableString(json['addressLine']),
+      womensFacilities: _toNullableBool(
+            json['womensFacilities'],
+          ) ??
+          _toNullableBool(facilities?['women']),
+      wheelchairAccess: _toNullableBool(
+            json['wheelchairAccess'],
+          ) ??
+          _toNullableBool(facilities?['wheelchairAccess']),
+      parking: _toNullableBool(json['parking']) ??
+          _toNullableBool(facilities?['parking']),
+      contactEmail: _toNullableString(json['contactEmail']) ??
+          _toNullableString(contact?['email']),
+      contactPhone: _toNullableString(json['contactPhone']) ??
+          _toNullableString(contact?['phone']),
+      lastScrapeError: _toNullableString(json['lastScrapeError']),
     );
   }
 
@@ -80,6 +110,29 @@ class RemoteCatalogClient {
     return value.toString();
   }
 
+  bool? _toNullableBool(Object? value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) {
+      final normalised = value.toLowerCase().trim();
+      if (normalised == 'true' || normalised == 'yes') return true;
+      if (normalised == 'false' || normalised == 'no') return false;
+    }
+    return null;
+  }
+
+  DateTime? _toNullableDateTime(Object? value) {
+    if (value == null) return null;
+    if (value is String && value.isNotEmpty) return DateTime.tryParse(value);
+    return null;
+  }
+
+  Map<String, dynamic>? _optionalMap(Object? value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return value.cast<String, dynamic>();
+    return null;
+  }
+
   RemoteTimetableFeed _parseTimetableFeed(Map<String, dynamic> json) {
     final mosqueId = _requiredString(json, 'mosqueId');
     final sourceKind = _parseSourceKind(_requiredString(json, 'sourceKind'));
@@ -92,9 +145,13 @@ class RemoteCatalogClient {
     return RemoteTimetableFeed(
       sourceKind: sourceKind,
       expiresAt: expiresAt,
+      confidence: _toNullableString(json['confidence']),
+      lane: _toNullableString(json['lane']),
       timetable: Timetable(
         mosqueId: mosqueId,
         fetchedAt: fetchedAt,
+        confidence: _toNullableString(json['confidence']),
+        lane: _toNullableString(json['lane']),
         days: daysJson
             .map((dayJson) => _parseDay(mosqueId, _asMap(dayJson, 'day')))
             .toList(),
@@ -197,11 +254,17 @@ class RemoteTimetableFeed {
     required this.timetable,
     required this.sourceKind,
     required this.expiresAt,
+    this.confidence,
+    this.lane,
+    this.lastError,
   });
 
   final Timetable timetable;
   final SourceKind sourceKind;
   final DateTime expiresAt;
+  final String? confidence;
+  final String? lane;
+  final String? lastError;
 }
 
 class RemoteCatalogException implements Exception {

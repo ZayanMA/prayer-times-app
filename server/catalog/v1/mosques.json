@@ -13559,7 +13559,7 @@
       "websiteUrl": "",
       "sourceKind": "calculated",
       "updatedAt": "2026-04-25T10:35:30.777251Z",
-      "isActive": true,
+      "isActive": false,
       "latitude": 50.9093886,
       "longitude": -1.3996202,
       "postcode": "SO14 0BH"
@@ -13627,13 +13627,17 @@
       "area": "St Marys",
       "city": "Southampton",
       "websiteUrl": "https://medinamosque.org.uk/",
-      "sourceKind": "pdf",
+      "sourceUrl": "https://medinamosque.org.uk/",
+      "sourceKind": "webTable",
+      "sourceStatus": "published",
       "updatedAt": "2026-04-25T10:35:30.777251Z",
       "isActive": true,
       "latitude": 50.9092,
       "longitude": -1.4017,
-      "postcode": "SO14 1NW",
-      "addressLine": "Compton Walk"
+      "postcode": "SO14 0BH",
+      "addressLine": "Compton Walk off St Mary's Road",
+      "facilities": {},
+      "contact": {}
     },
     {
       "id": "osm-way-695630024",
@@ -15836,18 +15840,22 @@
     },
     {
       "id": "osm-node-1071267923",
-      "name": "Shahjahal Mosque and Islamic Centre Southampton",
-      "slug": "shahjahal-mosque-and-islamic-centre-southampton-1071267923",
+      "name": "Shah Jalal Mosque and Islamic Centre Southampton",
+      "slug": "shahjalal-mosque-and-islamic-centre-southampton-1071267923",
       "area": "Southampton",
       "city": "Southampton",
-      "websiteUrl": "",
-      "sourceKind": "calculated",
+      "websiteUrl": "https://en.masjidway.com/masjid/2957/prayer",
+      "sourceUrl": "https://en.masjidway.com/masjid/2957/prayer",
+      "sourceKind": "webTable",
+      "sourceStatus": "directory-published",
       "updatedAt": "2026-04-25T10:35:30.777251Z",
       "isActive": true,
       "latitude": 50.9104108,
       "longitude": -1.3992335,
-      "postcode": "SO14 0GF",
-      "addressLine": "Oxford Avenue"
+      "postcode": "SO14 0BL",
+      "addressLine": "121 St Mary's Road",
+      "facilities": {},
+      "contact": {}
     },
     {
       "id": "osm-node-9074851066",
@@ -16237,13 +16245,17 @@
       "area": "Slough",
       "city": "Slough",
       "websiteUrl": "https://www.sloughislamictrust.org.uk/",
+      "sourceUrl": "https://www.sloughislamictrust.org.uk/Prayer-Timetable/",
       "sourceKind": "webTable",
+      "sourceStatus": "published",
       "updatedAt": "2026-04-25T10:35:30.777251Z",
       "isActive": true,
       "latitude": 51.5125,
       "longitude": -0.5972,
       "postcode": "SL1 1NB",
-      "addressLine": "Stoke Poges Lane"
+      "addressLine": "Stoke Poges Lane",
+      "facilities": {},
+      "contact": {}
     },
     {
       "id": "osm-way-88857317",

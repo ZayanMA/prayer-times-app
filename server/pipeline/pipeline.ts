@@ -1,4 +1,5 @@
 import { fetchMawaqitTimetable, type MawaqitDetection } from './extractors/mawaqit.ts';
+import { fetchHtmlTimetable } from './extractors/html_table.ts';
 import { extractWithLlm } from './extractors/llm_html.ts';
 import { detectPlatform } from './platform_detector.ts';
 import {
@@ -12,7 +13,7 @@ export interface PipelineSuccess {
   ok: true;
   feed: TimetableFeed;
   validation: ValidationReport;
-  lane: 'mawaqit' | 'llm-html' | 'photo' | 'manual';
+  lane: 'mawaqit' | 'html-table' | 'llm-html' | 'photo' | 'manual';
 }
 
 export interface PipelineFailure {
@@ -64,7 +65,26 @@ export async function runPipeline(
     }
   }
 
-  // Lane 2 — universal LLM HTML extractor
+  // Lane 2 — deterministic HTML table/current-day extractor
+  if (mosque.sourceKind === 'webTable' || mosque.sourceUrl) {
+    try {
+      const feed = await fetchHtmlTimetable(mosque, {
+        fetchImpl: opts.fetchImpl,
+      });
+      const validation = validateOrEmpty(feed, mosque);
+      if (validation.ok) {
+        return { ok: true, feed, validation, lane: 'html-table' };
+      }
+      attempts.push({
+        lane: 'html-table',
+        error: `validation failed: ${describeIssues(validation)}`,
+      });
+    } catch (err) {
+      attempts.push({ lane: 'html-table', error: (err as Error).message });
+    }
+  }
+
+  // Lane 3 — universal LLM HTML extractor
   if (opts.enableLlm && mosque.websiteUrl) {
     try {
       const feed = await extractWithLlm(mosque, {

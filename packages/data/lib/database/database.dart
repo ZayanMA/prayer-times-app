@@ -15,10 +15,19 @@ class Mosques extends Table {
   TextColumn get city => text()();
   TextColumn get websiteUrl => text()();
   TextColumn get sourceKind => text()();
+  TextColumn get sourceUrl => text().nullable()();
+  TextColumn get sourceStatus => text().nullable()();
+  DateTimeColumn get verifiedAt => dateTime().nullable()();
   RealColumn get latitude => real().nullable()();
   RealColumn get longitude => real().nullable()();
   TextColumn get postcode => text().nullable()();
   TextColumn get addressLine => text().nullable()();
+  BoolColumn get womensFacilities => boolean().nullable()();
+  BoolColumn get wheelchairAccess => boolean().nullable()();
+  BoolColumn get parking => boolean().nullable()();
+  TextColumn get contactEmail => text().nullable()();
+  TextColumn get contactPhone => text().nullable()();
+  TextColumn get lastScrapeError => text().nullable()();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
 
@@ -61,6 +70,9 @@ class TimetableDays extends Table {
 class SourceCaches extends Table {
   TextColumn get mosqueId => text().references(Mosques, #id)();
   TextColumn get sourceKind => text()();
+  TextColumn get confidence => text().nullable()();
+  TextColumn get lane => text().nullable()();
+  TextColumn get lastError => text().nullable()();
   TextColumn get etag => text().nullable()();
   DateTimeColumn get fetchedAt => dateTime()();
   DateTimeColumn get expiresAt => dateTime()();
@@ -78,7 +90,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -92,6 +104,20 @@ class AppDatabase extends _$AppDatabase {
             await migrator.addColumn(mosques, mosques.longitude);
             await migrator.addColumn(mosques, mosques.postcode);
             await migrator.addColumn(mosques, mosques.addressLine);
+          }
+          if (from < 4) {
+            await migrator.addColumn(mosques, mosques.sourceUrl);
+            await migrator.addColumn(mosques, mosques.sourceStatus);
+            await migrator.addColumn(mosques, mosques.verifiedAt);
+            await migrator.addColumn(mosques, mosques.womensFacilities);
+            await migrator.addColumn(mosques, mosques.wheelchairAccess);
+            await migrator.addColumn(mosques, mosques.parking);
+            await migrator.addColumn(mosques, mosques.contactEmail);
+            await migrator.addColumn(mosques, mosques.contactPhone);
+            await migrator.addColumn(mosques, mosques.lastScrapeError);
+            await migrator.addColumn(sourceCaches, sourceCaches.confidence);
+            await migrator.addColumn(sourceCaches, sourceCaches.lane);
+            await migrator.addColumn(sourceCaches, sourceCaches.lastError);
           }
         },
         beforeOpen: (details) async {
@@ -111,10 +137,19 @@ Mosque mosqueFromRow(MosqueRow row) {
     sourceKind: SourceKind.values.byName(row.sourceKind),
     updatedAt: row.updatedAt,
     isActive: row.isActive,
+    sourceUrl: row.sourceUrl == null ? null : Uri.parse(row.sourceUrl!),
+    sourceStatus: row.sourceStatus,
+    verifiedAt: row.verifiedAt,
     latitude: row.latitude,
     longitude: row.longitude,
     postcode: row.postcode,
     addressLine: row.addressLine,
+    womensFacilities: row.womensFacilities,
+    wheelchairAccess: row.wheelchairAccess,
+    parking: row.parking,
+    contactEmail: row.contactEmail,
+    contactPhone: row.contactPhone,
+    lastScrapeError: row.lastScrapeError,
   );
 }
 

@@ -36,7 +36,8 @@ Future<void> main(List<String> args) async {
   }
 
   final body = jsonDecode(response.body) as Map<String, dynamic>;
-  final elements = (body['elements'] as List<dynamic>).cast<Map<String, dynamic>>();
+  final elements =
+      (body['elements'] as List<dynamic>).cast<Map<String, dynamic>>();
   stdout.writeln('Received ${elements.length} elements.');
 
   final mosques = <Map<String, Object?>>[];
@@ -116,8 +117,8 @@ Future<void> main(List<String> args) async {
         : '${args.first}/server/source_config/mosques.json',
   );
   if (curatedConfig.existsSync()) {
-    final curated = jsonDecode(curatedConfig.readAsStringSync())
-        as Map<String, dynamic>;
+    final curated =
+        jsonDecode(curatedConfig.readAsStringSync()) as Map<String, dynamic>;
     final entries =
         (curated['mosques'] as List<dynamic>).cast<Map<String, dynamic>>();
     for (final entry in entries) {
@@ -129,13 +130,21 @@ Future<void> main(List<String> args) async {
         'area': entry['area'],
         'city': entry['city'],
         'websiteUrl': entry['websiteUrl'],
+        if (entry['sourceUrl'] != null) 'sourceUrl': entry['sourceUrl'],
         'sourceKind': entry['sourceKind'],
+        if (entry['sourceStatus'] != null)
+          'sourceStatus': entry['sourceStatus'],
+        if (entry['verifiedAt'] != null) 'verifiedAt': entry['verifiedAt'],
         'updatedAt': now,
         'isActive': entry['isActive'] ?? true,
         if (entry['latitude'] != null) 'latitude': entry['latitude'],
         if (entry['longitude'] != null) 'longitude': entry['longitude'],
         if (entry['postcode'] != null) 'postcode': entry['postcode'],
         if (entry['addressLine'] != null) 'addressLine': entry['addressLine'],
+        if (entry['facilities'] != null) 'facilities': entry['facilities'],
+        if (entry['contact'] != null) 'contact': entry['contact'],
+        if (entry['lastScrapeError'] != null)
+          'lastScrapeError': entry['lastScrapeError'],
       });
     }
   }

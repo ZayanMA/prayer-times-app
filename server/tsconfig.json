@@ -12,5 +12,5 @@
     "noEmit": true,
     "lib": ["ES2022", "DOM"]
   },
-  "include": ["pipeline/**/*", "api/**/*", "cron/**/*"]
+  "include": ["pipeline/**/*", "api/**/*", "cron/**/*", "outreach/**/*"]
 }

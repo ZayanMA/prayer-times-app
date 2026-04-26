@@ -6,14 +6,29 @@ import 'package:prayer_times_ui/ui.dart';
 
 import 'features/favourites/favourites_screen.dart';
 import 'features/find/find_screen.dart';
+import 'features/onboarding/onboarding_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/today/today_screen.dart';
 import 'services/providers.dart';
 
 final _routerProvider = Provider<GoRouter>((ref) {
+  final settings = ref.watch(settingsProvider);
+
   return GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      if (!settings.onboardingComplete && state.uri.path != '/onboarding') {
+        return '/onboarding';
+      }
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: '/onboarding',
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: OnboardingScreen(),
+        ),
+      ),
       ShellRoute(
         builder: (context, state, child) {
           final location = state.uri.path;
@@ -83,12 +98,13 @@ class PrayerTimesApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
+    final dir = settings.designDirection;
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Prayer Times',
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      theme: DirectionTheme.forDirection(dir, Brightness.light),
+      darkTheme: DirectionTheme.forDirection(dir, Brightness.dark),
       themeMode: switch (settings.themeMode) {
         AppThemeMode.system => ThemeMode.system,
         AppThemeMode.light => ThemeMode.light,

@@ -57,13 +57,34 @@ export const mosqueRecordSchema = z.object({
   area: z.string(),
   city: z.string(),
   websiteUrl: z.string(),
+  sourceUrl: z.string().nullable().optional(),
   sourceKind: sourceKindSchema,
+  sourceStatus: z.string().nullable().optional(),
   updatedAt: z.string(),
+  verifiedAt: z.string().nullable().optional(),
   isActive: z.boolean(),
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
   postcode: z.string().nullable().optional(),
   addressLine: z.string().nullable().optional(),
+  facilities: z
+    .object({
+      women: z.boolean().nullable().optional(),
+      wheelchairAccess: z.boolean().nullable().optional(),
+      parking: z.boolean().nullable().optional(),
+    })
+    .partial()
+    .nullable()
+    .optional(),
+  contact: z
+    .object({
+      email: z.string().nullable().optional(),
+      phone: z.string().nullable().optional(),
+    })
+    .partial()
+    .nullable()
+    .optional(),
+  lastScrapeError: z.string().nullable().optional(),
   platformHint: z.string().nullable().optional(),
 });
 

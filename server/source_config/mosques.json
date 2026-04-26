@@ -1,0 +1,61 @@
+{
+  "mosques": [
+    {
+      "id": "slough-islamic-trust",
+      "name": "Slough Islamic Trust",
+      "slug": "slough-islamic-trust",
+      "area": "Slough",
+      "city": "Slough",
+      "websiteUrl": "https://www.sloughislamictrust.org.uk/",
+      "sourceKind": "webTable",
+      "sourceUrl": "https://www.sloughislamictrust.org.uk/Prayer-Timetable/",
+      "sourceStatus": "published",
+      "updatedAt": "2026-04-25T00:00:00Z",
+      "isActive": true,
+      "latitude": 51.5125,
+      "longitude": -0.5972,
+      "postcode": "SL1 1NB",
+      "addressLine": "Stoke Poges Lane",
+      "facilities": {},
+      "contact": {}
+    },
+    {
+      "id": "medina-mosque-southampton",
+      "name": "Medina Mosque Southampton",
+      "slug": "medina-mosque-southampton",
+      "area": "St Marys",
+      "city": "Southampton",
+      "websiteUrl": "https://medinamosque.org.uk/",
+      "sourceKind": "webTable",
+      "sourceUrl": "https://medinamosque.org.uk/",
+      "sourceStatus": "published",
+      "updatedAt": "2026-04-25T00:00:00Z",
+      "isActive": true,
+      "latitude": 50.9092,
+      "longitude": -1.4017,
+      "postcode": "SO14 1NW",
+      "addressLine": "Compton Walk",
+      "facilities": {},
+      "contact": {}
+    },
+    {
+      "id": "osm-node-1071267923",
+      "name": "Shah Jalal Mosque and Islamic Centre Southampton",
+      "slug": "shahjalal-mosque-and-islamic-centre-southampton-1071267923",
+      "area": "Southampton",
+      "city": "Southampton",
+      "websiteUrl": "https://en.masjidway.com/masjid/2957/prayer",
+      "sourceKind": "webTable",
+      "sourceUrl": "https://en.masjidway.com/masjid/2957/prayer",
+      "sourceStatus": "directory-published",
+      "updatedAt": "2026-04-25T00:00:00Z",
+      "isActive": true,
+      "latitude": 50.9104108,
+      "longitude": -1.3992335,
+      "postcode": "SO14 0BL",
+      "addressLine": "121 St Mary's Road",
+      "facilities": {},
+      "contact": {}
+    }
+  ]
+}

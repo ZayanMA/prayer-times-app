@@ -5,11 +5,15 @@ class Timetable {
     required this.mosqueId,
     required this.days,
     this.fetchedAt,
+    this.confidence,
+    this.lane,
   });
 
   final String mosqueId;
   final List<DailyTimetable> days;
   final DateTime? fetchedAt;
+  final String? confidence;
+  final String? lane;
 
   DailyTimetable? dayFor(DateTime date) {
     final target = DateTime(date.year, date.month, date.day);

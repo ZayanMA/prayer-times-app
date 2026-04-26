@@ -1,5 +1,7 @@
 enum AppThemeMode { system, light, dark }
 
+enum AppDesignDirection { almanac, calligraphic, celestial }
+
 enum TimeFormat { h24, h12 }
 
 enum CalculationMethod {
@@ -78,6 +80,8 @@ class AppSettings {
     this.manualLocation,
     this.notifications = const NotificationPreferences(),
     this.showEstimatedTimes = false,
+    this.designDirection = AppDesignDirection.celestial,
+    this.onboardingComplete = false,
   });
 
   final AppThemeMode themeMode;
@@ -87,10 +91,9 @@ class AppSettings {
   final bool useDeviceLocation;
   final ManualLocation? manualLocation;
   final NotificationPreferences notifications;
-
-  /// When the chosen mosque does not publish a timetable, fall back to
-  /// astronomical calculation instead of showing an "unavailable" state.
   final bool showEstimatedTimes;
+  final AppDesignDirection designDirection;
+  final bool onboardingComplete;
 
   AppSettings copyWith({
     AppThemeMode? themeMode,
@@ -102,6 +105,8 @@ class AppSettings {
     bool clearManualLocation = false,
     NotificationPreferences? notifications,
     bool? showEstimatedTimes,
+    AppDesignDirection? designDirection,
+    bool? onboardingComplete,
   }) =>
       AppSettings(
         themeMode: themeMode ?? this.themeMode,
@@ -114,5 +119,7 @@ class AppSettings {
             : (manualLocation ?? this.manualLocation),
         notifications: notifications ?? this.notifications,
         showEstimatedTimes: showEstimatedTimes ?? this.showEstimatedTimes,
+        designDirection: designDirection ?? this.designDirection,
+        onboardingComplete: onboardingComplete ?? this.onboardingComplete,
       );
 }
